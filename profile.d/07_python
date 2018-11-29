@@ -1,0 +1,6 @@
+export WORKON_HOME=${HOME}/.virtualenvs
+export PROJECT_HOME=${HOME}/Dev/local/python
+source /usr/local/bin/virtualenvwrapper.sh
+
+
+# vim:ft=sh

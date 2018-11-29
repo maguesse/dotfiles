@@ -1,0 +1,268 @@
+#!/bin/bash
+# Bash wrappers for docker run commands
+# Freely inspired from Jess's dotfiles https://github.com/jfrazelle/dotfiles
+export DOCKER_REPO_PREFIX=maguesse
+dockerdir=/var/lib/docker
+
+#
+# Helper Functions
+#
+
+getX11Cookie() {
+	XCOOKIE=$(xauth list | grep unix | cut -f2 -d"/" | tr -cd '\11\12\15\40-\176' | sed -e 's/  / /g')	
+}
+
+log_verbose() {
+	[[ $DEBUG ]] && echo "$1"
+}
+
+dcleanup-volumes() {
+	docker volume rm $(docker volume ls -qf dangling=true 2>/dev/null) 2>/dev/null
+}
+
+dcleanup(){
+	docker rm -v $(docker ps --filter status=exited --filter status=created -q 2>/dev/null) 2>/dev/null
+	docker rmi $(docker images --filter dangling=true -q 2>/dev/null) 2>/dev/null
+}
+
+del_stopped(){
+	local name=$1
+	local state=$(docker inspect --format "{{.State.Running}}" $name 2>/dev/null)
+
+	if [[ "$state" == "false" ]]; then
+		docker rm $name
+	fi
+}
+
+dcstop(){
+	local containers=$@
+
+	for container in $containers; do
+		local state=$(docker inspect --format "{{.State.Running}}" $container 2>/dev/null)
+		if [[ "$state" == "true" ]] || [[ "$state" == "" ]]; then
+			echo "$container is running, stopping it for you."
+			docker stop $container
+		else 
+			echo "$container does not seem to be running???"
+		fi
+	done
+}
+
+dcbuild(){
+	local containers=$@
+	for container in $containers; do
+		local state=$(docker inspect --format "{{.State.Running}}" $container 2>/dev/null)
+		if [[ "$state" == "true" ]]; then
+			echo "$container is running, stopping it for you."
+			docker stop $container
+		fi
+		docker build -t ${DOCKER_REPO_PREFIX}/$container -t ${DOCKER_REPO_PREFIX}/${container}:latest ~/dockerfiles/${container}
+	done
+}
+
+dcps(){
+	docker ps -a
+}
+
+relies_on(){
+	local containers=$@
+
+	for container in $containers; do
+		local state=$(docker inspect --format "{{.State.Running}}" $container 2>/dev/null)
+
+		if [[ "$state" == "false" ]] || [[ "$state" == "" ]]; then
+			echo "$container is not running, starting it for you."
+			$container
+		fi
+	done
+}
+
+#
+# Container Aliases
+#
+lollypop(){
+	local conf=${HOME}/.lollypop
+	[[ ! -d ${conf} ]] && mkdir ${conf}
+	del_stopped lollypop
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e DISPLAY=unix$DISPLAY \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /var/run/user/$(id -u):/var/run/user/$(id -u) \
+		-e TERM \
+		-e XAUTHORITY \
+		-e DBUS_SESSION_BUS_ADDRESS:${DBUS_SESSION_BUS_ADDRESS} \
+		-e HOME:${HOME} \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v ${HOME}:${HOME} \
+		-w "${HOME}" \
+		-u "$(id -u):$(id -g)" \
+		--group-add audio \
+		--device /dev/snd \
+		--name lollypop \
+		${DOCKER_REPO_PREFIX}/lollypop
+
+		#-u "$(id -u):$(id -g)" \
+}
+
+quodlibet(){
+	local conf=${HOME}/.quodlibet
+	del_stopped quodlibet
+	
+	[[ ! -d ${conf} ]] && mkdir ${conf}
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e DISPLAY=unix$DISPLAY \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /var/run/user/$(id -u):/var/run/user/$(id -u) \
+		-e TERM \
+		-e XAUTHORITY \
+		-e DBUS_SESSION_BUS_ADDRESS:${DBUS_SESSION_BUS_ADDRESS} \
+		-e HOME:${HOME} \
+		-e QT_DEVICE_PIXEL_RATIO \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v $HOME:$HOME \
+		--device /dev/snd \
+		--group-add audio \
+		-w "${HOME}" \
+		-u "$(id -u):$(id -g)" \
+		--name quodlibet \
+		${DOCKER_REPO_PREFIX}/quodlibet
+
+}
+
+quodlibet_pulseaudio(){
+	local conf=${HOME}/.quodlibet
+	del_stopped quodlibet
+	relies_on pulseaudio
+	
+	[[ ! -d ${conf} ]] && mkdir ${conf}
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e DISPLAY=unix$DISPLAY \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /var/run/user/$(id -u):/var/run/user/$(id -u) \
+		-e TERM \
+		-e XAUTHORITY \
+		-e DBUS_SESSION_BUS_ADDRESS:${DBUS_SESSION_BUS_ADDRESS} \
+		-e HOME:${HOME} \
+		-e QT_DEVICE_PIXEL_RATIO \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v $HOME:$HOME \
+	 	--link pulseaudio:pulseaudio \
+		-e PULSE_SERVER=pulseaudio \
+		-w "${HOME}" \
+		-u "$(id -u):$(id -g)" \
+		--name quodlibet \
+		${DOCKER_REPO_PREFIX}/quodlibet
+
+}
+
+pulseaudio(){
+	del_stopped pulseaudio
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		--device /dev/snd \
+		-p 4713:4713 \
+		--restart always \
+		--group-add audio \
+		--name pulseaudio \
+		${DOCKER_REPO_PREFIX}/pulseaudio
+}
+
+pingus() {
+	del_stopped pingus
+	
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v $HOME:$HOME \
+		-e DISPLAY=unix$DISPLAY \
+		-e TERM \
+		-e XAUTHORITY \
+		-e HOME:${HOME} \
+		--device /dev/snd \
+		--group-add audio \
+		-w "${HOME}" \
+		-u "$(id -u):$(id -g)" \
+		--name pingus \
+		${DOCKER_REPO_PREFIX}/pingus
+
+}
+
+darktable() {
+	del_stopped darktable
+	
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v $HOME:$HOME \
+		-e DISPLAY=unix$DISPLAY \
+		-e TERM \
+		-e XAUTHORITY \
+		-e HOME:${HOME} \
+		-w "${HOME}" \
+		-u "$(id -u):$(id -g)" \
+		--name darktable \
+		${DOCKER_REPO_PREFIX}/darktable
+
+}
+
+spotify() {
+	del_stopped spotify
+
+	getX11Cookie
+	docker run -d \
+		-e DISPLAY=unix$DISPLAY \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		--device /dev/snd \
+		--device /dev/dri \
+		--group-add audio \
+		--group-add video \
+		--name spotify \
+		${DOCKER_REPO_PREFIX}/spotify
+
+}
+###
+### Awesome sauce by @jpetazzo
+###
+command_not_found_handle () {
+	# Check if there is a container image with that name
+	if ! docker inspect --format '{{ .Author }}' "$1" >&/dev/null ; then
+		echo "$0: $1: command not found"
+		return
+	fi
+
+	# Check that it's really the name of the image, not a prefix
+	if docker inspect --format '{{ .Id }}' "$1" | grep -q "^$1" ; then
+		echo "$0: $1: command not found"
+		return
+	fi
+
+	docker run -ti -u $(whoami) -w "$HOME" \
+		$(env | cut -d= -f1 | awk '{print "-e", $1}') \
+		--device /dev/snd \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /home:/home \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		"${DOCKER_REPO_PREFIX}/$@"
+}
+
+# vim:ft=sh
