@@ -27,7 +27,7 @@ if ! shopt -oq posix; then
     fi
 fi
 
-for $DOTFILE in ~/.profile.d/*; do
+for DOTFILE in ~/.profile.d/*; do
     [[ -r "${DOTFILE}" ]] && [[ -f "${DOTFILE}" ]] && source ${DOTFILE}
 done
 unset file
