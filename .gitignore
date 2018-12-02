@@ -4,3 +4,5 @@
 # Ignore Vim's temporary files
 .*.swp
 *~
+
+.profile.d/*private
