@@ -1,0 +1,6 @@
+.gitconfig
+.xinputrc
+
+# Ignore Vim's temporary files
+.*.swp
+*~
