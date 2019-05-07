@@ -1,0 +1,8 @@
+alias g="git"
+alias gst="git status"
+alias gci="git commit"
+alias gco="git checkout"
+alias gadd="git add"
+alias gpom="git push origin master"
+
+# vim: set ft=sh:
