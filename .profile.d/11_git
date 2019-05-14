@@ -1,8 +1,17 @@
+#!/bin/bash
+# Git related alias, functions and export
 alias g="git"
 alias gst="git status"
 alias gci="git commit"
 alias gco="git checkout"
 alias gadd="git add"
 alias gpom="git push origin master"
+
+git config --global alias.co checkout
+git config --global alias.ci checkin
+git config --global alias.st status
+git config --global alias.ignore \
+    '!gi() { curl -L https://www.gitignore.io/api/$@ ;}; gi'
+
 
 # vim: set ft=sh:

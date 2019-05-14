@@ -1,3 +1,5 @@
+#!/bin/bash
+# Go aliases, functions, exports, ...
 # Add Go to the Path
 if [ -d "/usr/local/go/bin" ]; then
   PATH="/usr/local/go/bin:${PATH}"

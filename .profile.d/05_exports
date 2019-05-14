@@ -1,2 +1,7 @@
+#!/bin/bash
+# Global exports
+EDITOR=vim
+GPG_TTY=$(tty)
 
+export EDITOR GPG_TTY
 # vim: ft=sh

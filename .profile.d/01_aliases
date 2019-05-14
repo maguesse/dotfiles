@@ -1,4 +1,5 @@
 #!/bin/bash
+# Global aliases
 # Based on Jess Frazelle's dotfiles (https://github.com/jfrazelle/dotfiles.git)
 
 alias ls="ls --color"

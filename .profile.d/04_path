@@ -1,3 +1,5 @@
+#!/bin/bash
+# Global pathes
 # Add user's bin
 if [ -d "${HOME}/bin" ]; then
     PATH="${HOME}/bin:${PATH}"

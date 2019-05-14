@@ -1,4 +1,5 @@
 #!/bin/bash
+# Global functions
 #open() {
 #	if [[ $# -eq 0 ]]; then
 #		echo "Usage: open <URL>"
@@ -11,4 +12,8 @@
 #	fi
 #}
 
+# Get gitignore template from gitignore.io
+function gi() {
+    curl -sL https://www.gitignore.io/api/$@
+}
 # vim: ft=sh
