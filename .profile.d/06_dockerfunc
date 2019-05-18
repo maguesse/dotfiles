@@ -2,6 +2,7 @@
 # Bash wrappers for docker run commands
 # Freely inspired from Jess's dotfiles https://github.com/jfrazelle/dotfiles
 export DOCKER_REPO_PREFIX=maguesse
+export DOCKER_REGISTRY=registry.hub.docker.com
 dockerdir=/var/lib/docker
 
 #
@@ -75,6 +76,12 @@ relies_on(){
 			$container
 		fi
 	done
+}
+
+docker_remote_tags() {
+    if [ $# -eq 1 ]; then
+        curl -sS "https://${DOCKER_REGISTRY}/v2/repositories/$@/tags/" | jq '.results[].name' | sort
+    fi
 }
 
 #
