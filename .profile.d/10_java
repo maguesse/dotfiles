@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+# Java related
+
+# Switch Java alternative
+function switch_java() {
+    sudo update-alternatives --config java 
+    set_java_home
+}
+
+# Export JAVA_HOME relevant to the current Java alternative
+function set_java_home() {
+    JAVA_HOME=$(readlink -f $(which java) | sed -e 's:/bin/java::')
+    export JAVA_HOME
+}
+
+set_java_home
+
+# vim: ft=sh:
