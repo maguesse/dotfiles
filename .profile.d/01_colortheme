@@ -1,6 +1,6 @@
 #!/bin/bash
-COLORTHEME=solarized
-BACKGROUND=dark
+COLORTHEME=${COLORTHEME:-solarized}
+BACKGROUND=${BACKGROUND:-dark}
 
 export COLORTHEME
 export BACKGROUND
