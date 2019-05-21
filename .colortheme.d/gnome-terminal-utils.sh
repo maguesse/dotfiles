@@ -38,7 +38,7 @@ append_to_list() {
     declare key="$1"; shift
     declare value="$1"; shift
     declare entries=
-    
+
     if [ "$newGnome" == "0" ]; then
         entries="$(
             {
@@ -82,7 +82,7 @@ create_new_profile() {
     declare palette_file=${schemeDir}/palette
     declare pkey=$1; shift
 
-    copy_profile_from_default "$pkey" 
+    copy_profile_from_default "$pkey"
 
     if [ "$newGnome" == "0" ]; then
         append_to_list string ${CONFDIR}/global/profile_list "${profile_uid}"

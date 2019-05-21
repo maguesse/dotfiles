@@ -3,7 +3,7 @@
 
 # Switch Java alternative
 function switch_java() {
-    sudo update-alternatives --config java 
+    sudo update-alternatives --config java
     set_java_home
 }
 

@@ -6,7 +6,7 @@ dotfiles: ## Installs the dotfiles, isn't it ?
 	@for file in $(shell find $(CURDIR) -name ".*" -not -name ".gitignore" -not -name ".*.swp" -not -name ".git"); do \
 		f=$$(basename $$file); \
 		ln -vsfT $$file $(HOME)/$$f; \
-	done; 
+	done;
 
 .PHONY: help
 help: ## This help

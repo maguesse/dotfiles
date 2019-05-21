@@ -6,7 +6,7 @@
 #	else
 #		if [[ -e /usr/bin/gvfs-open ]]; then
 #			/usr/bin/gvfs-open $* > /dev/null 2>&1
-#		else 
+#		else
 #			/usr/bin/gnome-open $* > /dev/null 2>&1
 #		fi
 #	fi
