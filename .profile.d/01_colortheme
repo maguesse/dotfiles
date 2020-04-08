@@ -10,9 +10,9 @@ export DIRCOLORS_DB_PATH=~/.colortheme.d
 apply_theme() {
     eval $(dircolors ${DIRCOLORS_DB_PATH}/${COLORTHEME}/dircolors/dircolors.ansi-$(echo ${BACKGROUND} | tr [:upper:] [:lower:] ))
 
-    source ${DIRCOLORS_DB_PATH}/gnome-terminal-utils.sh
+    #source ${DIRCOLORS_DB_PATH}/gnome-terminal-utils.sh
 
-    set_terminal_profile ${COLORTHEME} ${BACKGROUND}
+    #set_terminal_profile ${COLORTHEME} ${BACKGROUND}
 }
 
 apply_theme
