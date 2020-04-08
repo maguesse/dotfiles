@@ -1,0 +1,9 @@
+#!/bin/bash
+
+AWS_CMPL=${HOME}/.local/bin/aws_bash_completer
+
+if [ -e ${AWS_CMPL} ]; then
+    source ${AWS_CMPL}
+fi
+
+# vim:ft=sh

@@ -1,8 +1,21 @@
 #!/bin/bash
 # Python related
-export WORKON_HOME=${HOME}/.virtualenvs
-export PROJECT_HOME=${HOME}/Dev/local/python
-source /usr/local/bin/virtualenvwrapper.sh
+#export WORKON_HOME=${HOME}/.virtualenvs
+#export PROJECT_HOME=${HOME}/Dev/local/python
+#source /usr/local/bin/virtualenvwrapper.sh
+
+# Instruct Pyenv to generate shared libraries
+# Seems necessary for YouCompleteMe plugin.
+PYTHON_CONFIGURE_OPTS="--enable-shared"
+
+export PATH="${HOME}/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+DEPHELL_CPM="${HOME}/.local/etc/bash_completion.d/dephell.bash-completion"
+if [ -e ${DEPHELL_CPM} ]; then
+    source ${DEPHELL_CPM}
+fi
 
 
 # vim:ft=sh

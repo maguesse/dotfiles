@@ -1,17 +1,25 @@
 #!/bin/bash
 # Git related alias, functions and export
+merge_test() {
+        git merge --no-commit --no-ff "$1" && git merge --abort && echo "Merge aborted"
+    }
 alias g="git"
 alias gst="git status"
 alias gci="git commit"
 alias gco="git checkout"
 alias gadd="git add"
-alias gpom="git push origin master"
+alias gpm="git push origin master"
+alias gph="git push origin HEAD"
+alias gdiff="git diff"
+alias gmt="merge_test"
 
 git config --global alias.co checkout
 git config --global alias.ci checkin
 git config --global alias.st status
 git config --global alias.ignore \
     '!gi() { curl -L https://www.gitignore.io/api/$@ ;}; gi'
+git config --global alias.mergetest \
+    '!f() { git merge --no-commit --no-ff "$1" && git merge --abort && echo "Merge aborted";};f'
 
 
 # vim: set ft=sh:

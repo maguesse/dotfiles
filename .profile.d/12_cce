@@ -1,0 +1,14 @@
+# User specific aliases and functions
+if [ -e ~/.sag/profile ]; then
+	. ~/.sag/profile
+fi
+	
+# Command Central variables added by bootstrap installer
+
+CC_CLI_HOME="/home/vagrant/sag103/CommandCentral/client"
+PATH="${PATH}:${CC_CLI_HOME}/bin"
+
+export CC_CLI_HOME
+export PATH
+
+# vim: ft=sh:
