@@ -9,8 +9,13 @@ function switch_java() {
 
 # Export JAVA_HOME relevant to the current Java alternative
 function set_java_home() {
-    JAVA_HOME=$(readlink -f $(which java) | sed -e 's:/bin/java::')
-    export JAVA_HOME
+	JAVA_VERSION=$(java -version 2>&1 > /dev/null | egrep "\S+\s+version")
+	if [ $? -eq 0 ]; then
+		JAVA_HOME=$(readlink -f $(which java) | sed -e 's:/bin/java::')
+		export JAVA_HOME
+	else
+		echo "Java is not installed."
+	fi
 }
 # Maven Environment variables
 M2_HOME=${HOME}/tools/apache-maven-3.6.3

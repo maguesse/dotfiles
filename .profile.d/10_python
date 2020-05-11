@@ -8,9 +8,14 @@
 # Seems necessary for YouCompleteMe plugin.
 PYTHON_CONFIGURE_OPTS="--enable-shared"
 
-export PATH="${HOME}/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+PYENV=$(which pyenv)
+if [ ! -z "${PYENV}" ]; then
+	export PATH="${HOME}/.pyenv/bin:$PATH"
+	eval "$(pyenv init -)"
+	eval "$(pyenv virtualenv-init -)"
+else
+	echo "Pyenv not installed."
+fi
 
 DEPHELL_CPM="${HOME}/.local/etc/bash_completion.d/dephell.bash-completion"
 if [ -e ${DEPHELL_CPM} ]; then
