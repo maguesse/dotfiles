@@ -1,5 +1,10 @@
 #!/bin/bash
 # Global pathes
+KERNEL=$(uname -r | grep -qi "Microsoft" &> /dev/null)
+if [ $? ]; then
+    # Remove Windows appended PATH
+    PATH=$(printenv PATH | sed -e 's!/[a-z]/[^:]*:!!g')
+fi
 # Add user's bin
 if [ -d "${HOME}/bin" ]; then
     PATH="${HOME}/bin:${PATH}"
