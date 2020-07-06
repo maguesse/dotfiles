@@ -1,15 +1,18 @@
 #!/bin/bash
 # Nodejs & NPM related
-#export NPM_PACKAGES="${HOME}/.npm-packages"
-#export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
-#export PATH="$NPM_PACKAGES/bin:$PATH"
-#
-export NPM_PREFIX=${HOME}/.local
-NPM_VER=$(npm --version 2>&1 > /dev/null)
-if [ ! -z "${NPM_VER}" ]; then
-	npm config set prefix ${NPM_PREFIX} --no-update-notifier
+NVM_DIR=${HOME}/.nvm
+if [ -e "${NVM_DIR}" ]; then
+    export ${NVM_DIR}
+    [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh" # This loads nvm
+    [ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion" # This loads bash completion
 else
-	echo "NPM is not installed."
+    export NPM_PREFIX=${HOME}/.local
+    NPM_VER=$(command -v npm)
+    if [ ! -z "${NPM_VER}" ]; then
+        command npm config set prefix ${NPM_PREFIX} --no-update-notifier
+    else
+        echo "NPM is not installed."
+    fi
 fi
 
 # Unset manpath so we can inherit from /etc/manpath via the `manpath`

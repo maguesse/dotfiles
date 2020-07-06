@@ -20,6 +20,8 @@ git config --global alias.ignore \
     '!gi() { curl -L https://www.gitignore.io/api/$@ ;}; gi'
 git config --global alias.mergetest \
     '!f() { git merge --no-commit --no-ff "$1" && git merge --abort && echo "Merge aborted";};f'
+git config --global alias.mr \
+    '!f() { git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2;};f'
 
 
 # vim: set ft=sh:
