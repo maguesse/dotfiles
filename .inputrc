@@ -8,3 +8,5 @@ set mark-symlinked-directories on
 set page-completions off
 
 set completion-query-items 100
+
+set bell-style none
